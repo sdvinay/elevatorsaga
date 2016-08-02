@@ -29,6 +29,12 @@
                     }
                 });
 
+                floor.on("up_button_pressed", function() {
+                    if (floorsWaiting.indexOf(floorNum) === -1) {
+                        floorsWaiting.push(floorNum);
+                    }
+                });
+
             }();
         }
 
