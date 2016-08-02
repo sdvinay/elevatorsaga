@@ -9,7 +9,7 @@
                 var elevatorNum = i;
 
                 elevator.debug = function() {
-                    var debugStr = `Elevator ${elevatorNum} on floor ${elevator.currentFloor}: \
+                    var debugStr = `Elevator ${elevatorNum} on floor ${elevator.currentFloor()}: \
                         DestQueue = ${elevator.destinationQueue}; floorsWaiting = ${floorsWaiting}`;
                     console.log(debugStr);
                 }
@@ -26,6 +26,9 @@
                 });
 
                 elevator.on("stopped_at_floor", function(floorNum) {
+                    if (floorsWaiting.indexOf(floorNum) > -1) {
+                        floorsWaiting.splice(floorsWaiting.indexOf(floorNum), 1);
+                    }
                     elevator.debug();
                 })
             }();
@@ -40,12 +43,14 @@
                     if (floorsWaiting.indexOf(floorNum) === -1) {
                         floorsWaiting.push(floorNum);
                     }
+                    console.log(`Down pressed on floor ${floorNum}; floorsWaiting = ${floorsWaiting}`)
                 });
 
                 floor.on("up_button_pressed", function() {
                     if (floorsWaiting.indexOf(floorNum) === -1) {
                         floorsWaiting.push(floorNum);
                     }
+                    console.log(`Up   pressed on floor ${floorNum}; floorsWaiting = ${floorsWaiting}`)
                 });
 
             }();
