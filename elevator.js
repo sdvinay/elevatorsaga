@@ -6,10 +6,11 @@
         for (var i = 0; i < elevators.length; i++) {
             var x = function() {
                 var elevator = elevators[i];
+                var elevatorNum = i;
 
                 elevator.debug = function() {
-                    var debugStr = "DestQueue = " + elevator.destinationQueue.toString() +
-                        "; floorsWaiting = " + floorsWaiting.toString();
+                    var debugStr = `Elevator ${elevatorNum} on floor ${elevator.currentFloor}: \
+                        DestQueue = ${elevator.destinationQueue}; floorsWaiting = ${floorsWaiting}`;
                     console.log(debugStr);
                 }
 
