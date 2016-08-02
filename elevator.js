@@ -24,7 +24,9 @@
                 var floor = floors[f];
                 var floorNum = f;
                 floor.on("down_button_pressed", function() {
-                    floorsWaiting.push(floorNum);
+                    if (floorsWaiting.indexOf(floorNum) === -1) {
+                        floorsWaiting.push(floorNum);
+                    }
                 });
 
             }();
