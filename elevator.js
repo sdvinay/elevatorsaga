@@ -7,8 +7,9 @@
             var x = function() {
                 var elevator = elevators[i];
                 elevator.on("idle", function() {
+                    console.log(floorsWaiting);
                     if (floorsWaiting.length > 0) {
-                        elevator.goToFloor(floorsWaiting.pop());
+                        elevator.goToFloor(floorsWaiting.shift());
                     }
                 });
 
