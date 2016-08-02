@@ -6,16 +6,27 @@
         for (var i = 0; i < elevators.length; i++) {
             var x = function() {
                 var elevator = elevators[i];
+
+                elevator.debug = function() {
+                    var debugStr = "DestQueue = " + elevator.destinationQueue.toString() +
+                        "; floorsWaiting = " + floorsWaiting.toString();
+                    console.log(debugStr);
+                }
+
                 elevator.on("idle", function() {
-                    console.log(floorsWaiting);
                     if (floorsWaiting.length > 0) {
                         elevator.goToFloor(floorsWaiting.shift());
+                        elevator.debug();
                     }
                 });
 
                 elevator.on("floor_button_pressed", function(floorNum) {
                     elevator.goToFloor(floorNum);
                 });
+
+                elevator.on("stopped_at_floor", function(floorNum) {
+                    elevator.debug();
+                })
             }();
         }
 
