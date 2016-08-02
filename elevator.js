@@ -1,6 +1,8 @@
 {
     init: function(elevators, floors) {
         var floorsWaiting = [];
+
+        // Elevator event listeners
         for (var i = 0; i < elevators.length; i++) {
             var x = function() {
                 var elevator = elevators[i];
@@ -15,6 +17,8 @@
                 });
             }();
         }
+
+        // Floor event listeners
         for (var f = 0; f < floors.length; f++) {
             var y = function() {
                 var floor = floors[f];
