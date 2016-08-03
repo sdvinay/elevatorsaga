@@ -1,6 +1,6 @@
 {
     init: function(elevators, floors) {
-        var floorsWaiting = [];
+        var floorsWaiting = {'up' : [], 'down' : []};
         var idleElevators = [];
 
         // Elevator event listeners
@@ -16,8 +16,8 @@
                 }
 
                 elevator.on("idle", function() {
-                    if (floorsWaiting.length > 0) {
-                        elevator.goToFloor(floorsWaiting.shift());
+                    if (floorsWaiting.up.length > 0) {
+                        elevator.goToFloor(floorsWaiting.up.shift());
                         elevator.debug();
                     } else {
                         idleElevators.push(elevatorNum);
@@ -29,8 +29,8 @@
                 });
 
                 elevator.on("stopped_at_floor", function(floorNum) {
-                    if (floorsWaiting.indexOf(floorNum) > -1) {
-                        floorsWaiting.splice(floorsWaiting.indexOf(floorNum), 1);
+                    if (floorsWaiting.up.indexOf(floorNum) > -1) {
+                        floorsWaiting.up.splice(floorsWaiting.up.indexOf(floorNum), 1);
                     }
                     elevator.debug();
                 })
@@ -44,10 +44,10 @@
                 var floorNum = f;
                 var onButtonPressed = function(direction) {
                     return function() {
-                        if (floorsWaiting.indexOf(floorNum) === -1) {
-                            floorsWaiting.push(floorNum);
+                        if (floorsWaiting.up.indexOf(floorNum) === -1) {
+                            floorsWaiting.up.push(floorNum);
                         }
-                        console.log(`${direction} pressed on floor ${floorNum}; floorsWaiting = ${floorsWaiting}`)
+                        console.log(`${direction} pressed on floor ${floorNum}; floorsWaiting = ${JSON.stringify(floorsWaiting)}`)
                         if (idleElevators.length > 0) {
                             elevators[idleElevators.shift()].goToFloor(floorNum);
                         }
