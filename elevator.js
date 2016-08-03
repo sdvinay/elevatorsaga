@@ -28,14 +28,43 @@
                     }
                 });
 
+                elevator.findClosestFloor = function(currentFloor, floors) {
+                    if (floors.length > 0) {
+                        var closestFloor = floors[0];
+                        var dist = Math.abs(currentFloor - floors[0]);
+                        for (var i = 1; i < floors.length; i++) {
+                            var thisDist = Math.abs(currentFloor - floors[i]);
+                            if (thisDist < dist) {
+                                closestFloor = floors[i];
+                                dist = thisDist;
+                            }
+                        }
+                    }
+                    return closestFloor;
+                }
+
+                // Goes immediately to the closest floor that has a button pressed
+                // Does nothing if no buttons are pressed
+                elevator.goToClosestPressedFloor = function() {
+                    var floors = elevator.getPressedFloors();
+                    if (floors.length > 0) {
+                        var closestFloor = elevator.findClosestFloor(elevator.currentFloor(), floors);
+                        console.log(`Elevator ${elevatorNum}:  Currently on floor ${elevator.currentFloor()}\
+                            pressedFloors = ${floors}. Headed to floor ${closestFloor} `);
+                        elevator.goToFloor(closestFloor, true);
+                    }
+                }
+
                 elevator.on("floor_button_pressed", function(floorNum) {
-                    elevator.goToFloor(floorNum);
+                    console.log(`Elevator ${elevatorNum}: floor button pressed for ${floorNum}; `);
+                    elevator.goToClosestPressedFloor();
                 });
 
                 elevator.on("stopped_at_floor", function(floorNum) {
                     if (floorsWaiting.indexOf(floorNum) > -1) {
                         floorsWaiting.splice(floorsWaiting.indexOf(floorNum), 1);
                     }
+                    elevator.goToClosestPressedFloor();
                     elevator.debug();
                 })
             }();
@@ -59,7 +88,7 @@
                     }
                 };
                 floor.on("down_button_pressed", onButtonPressed('down'));
-                floor.on("up_button_pressed"  , onButtonPressed('up'  ));
+                floor.on("up_button_pressed", onButtonPressed('up'));
             }();
         }
     },
