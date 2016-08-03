@@ -15,6 +15,10 @@
                     console.log(debugStr);
                 }
 
+                elevator.call = function(floorNum) {
+                    elevator.goToFloor(floorNum);
+                }
+
                 elevator.on("idle", function() {
                     if (floorsWaiting.length > 0) {
                         elevator.goToFloor(floorsWaiting.shift());
@@ -49,7 +53,7 @@
                         }
                         console.log(`${direction} pressed on floor ${floorNum}; floorsWaiting = ${floorsWaiting}`)
                         if (idleElevators.length > 0) {
-                            elevators[idleElevators.shift()].goToFloor(floorNum);
+                            elevators[idleElevators.shift()].call(floorNum);
                         }
 
                     }
