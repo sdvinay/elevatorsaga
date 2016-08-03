@@ -1,6 +1,7 @@
 {
     init: function(elevators, floors) {
         var floorsWaiting = [];
+        var idleElevators = [];
 
         // Elevator event listeners
         for (var i = 0; i < elevators.length; i++) {
@@ -18,6 +19,8 @@
                     if (floorsWaiting.length > 0) {
                         elevator.goToFloor(floorsWaiting.shift());
                         elevator.debug();
+                    } else {
+                        idleElevators.push(elevatorNum);
                     }
                 });
 
@@ -44,6 +47,9 @@
                         floorsWaiting.push(floorNum);
                     }
                     console.log(`Down pressed on floor ${floorNum}; floorsWaiting = ${floorsWaiting}`)
+                    if (idleElevators.length > 0) {
+                        elevators[idleElevators.shift()].goToFloor(floorNum);
+                    }
                 });
 
                 floor.on("up_button_pressed", function() {
@@ -51,6 +57,9 @@
                         floorsWaiting.push(floorNum);
                     }
                     console.log(`Up   pressed on floor ${floorNum}; floorsWaiting = ${floorsWaiting}`)
+                    if (idleElevators.length > 0) {
+                        elevators[idleElevators.shift()].goToFloor(floorNum);
+                    }
                 });
 
             }();
