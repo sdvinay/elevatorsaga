@@ -1,14 +1,15 @@
 {
     init: function(elevators, floors) {
-        var floorsWaiting = {
+        // Global state
+        var floorsWaiting = { // floors that have passengers waiting for elevators, by direction they want to go
             'up': [],
             'down': []
         };
-        var idleElevators = [];
+        var idleElevators = []; // elevators sitting idle, available to be called
 
-        // Elevator event listeners
+        // Elevator event listeners; attaching the same code/listeners to each elevator here:
         for (var i = 0; i < elevators.length; i++) {
-            var x = function() {
+            var x = function() { // create a closure for local state per-elevator
                 var elevator = elevators[i];
                 var elevatorNum = i;
 
@@ -61,9 +62,9 @@
                     return closestFloor;
                 }
 
-                // Goes immediately to the closest floor that has a button pressed
-                // Does nothing if no buttons are pressed
-                elevator.goToClosestPressedFloor = function() {
+                // Goes immediately to the closest destination floor of the elevator's passengers
+                // Does nothing if no destination buttons are pressed
+                elevator.goToClosestPressedDestination = function() {
                     var floors = elevator.getPressedFloors();
                     if (floors.length > 0) {
                         var closestFloor = elevator.findClosestFloor(elevator.currentFloor(), floors);
@@ -73,17 +74,17 @@
                     }
                 }
 
-                // when a floor button is pressed, go to the *closest* pressed floor
+                // when a destination button is pressed, go to the *closest* pressed destination
                 // if we were already going to a closer floor, this is effectively a no-op
                 // but if the button was pressed for a closer floor, now we'll go there first
                 elevator.on("floor_button_pressed", function(floorNum) {
                     console.log(`Elevator ${elevatorNum}: floor button pressed for ${floorNum}; `);
-                    elevator.goToClosestPressedFloor();
+                    elevator.goToClosestPressedDestination();
                 });
 
                 elevator.on("stopped_at_floor", function(floorNum) {
                     // since we always have both indicators on (for now), all passengers will (try to) board
-                    // so we can clear button presses in both directions
+                    // so we can clear the call button presses in both directions
                     if (floorsWaiting.up.indexOf(floorNum) > -1) {
                         floorsWaiting.up.splice(floorsWaiting.up.indexOf(floorNum), 1);
                     }
@@ -94,7 +95,7 @@
                     // Always attempt to go to the closest floor requested by a passenger
                     // If there are none, this will no-op and the elevator will act on its destination queue
                     // (if any) and then go idle.
-                    elevator.goToClosestPressedFloor();
+                    elevator.goToClosestPressedDestination();
                     elevator.debug();
                 })
             }();
@@ -105,7 +106,7 @@
             var y = function() {
                 var floor = floors[f];
                 var floorNum = f;
-                var onButtonPressed = function(direction) {
+                var onCallButtonPressed = function(direction) {
                     return function() {
                         if (floorsWaiting[direction].indexOf(floorNum) === -1) {
                             floorsWaiting[direction].push(floorNum);
@@ -118,8 +119,8 @@
 
                     }
                 };
-                floor.on("down_button_pressed", onButtonPressed('down'));
-                floor.on("up_button_pressed", onButtonPressed('up'));
+                floor.on("down_button_pressed", onCallButtonPressed('down'));
+                floor.on("up_button_pressed", onCallButtonPressed('up'));
             }();
         }
     },
