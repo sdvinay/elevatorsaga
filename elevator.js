@@ -83,12 +83,12 @@
                 });
 
                 elevator.on("stopped_at_floor", function(floorNum) {
-                    // since we always have both indicators on (for now), all passengers will (try to) board
-                    // so we can clear the call button presses in both directions
-                    if (floorsWaiting.up.indexOf(floorNum) > -1) {
+                    // clear the call press button only for the direction(s) we have indicated
+                    // (because only those passengers will get on board)
+                    if (elevator.goingUpIndicator() && (floorsWaiting.up.indexOf(floorNum) > -1)) {
                         floorsWaiting.up.splice(floorsWaiting.up.indexOf(floorNum), 1);
                     }
-                    if (floorsWaiting.down.indexOf(floorNum) > -1) {
+                    if (elevator.goingDownIndicator() && (floorsWaiting.down.indexOf(floorNum) > -1)) {
                         floorsWaiting.down.splice(floorsWaiting.down.indexOf(floorNum), 1);
                     }
 
@@ -97,7 +97,8 @@
                     // (if any) and then go idle.
                     elevator.goToClosestPressedDestination();
                     elevator.debug();
-                })
+                });
+
             }();
         }
 
