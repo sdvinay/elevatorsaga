@@ -11,7 +11,8 @@
 
                 elevator.debug = function() {
                     var debugStr = `Elevator ${elevatorNum} on floor ${elevator.currentFloor()}: \
-                        DestQueue = ${elevator.destinationQueue}; floorsWaiting = ${floorsWaiting}`;
+                        DestQueue = ${elevator.destinationQueue}; \ 
+                        floorsWaiting = ${JSON.stringify(floorsWaiting)}`;
                     console.log(debugStr);
                 }
 
@@ -20,10 +21,13 @@
                 }
 
                 elevator.on("idle", function() {
-                    if (floorsWaiting.up.length > 0) {
+                    if (floorsWaiting.down.length > 0) {
+                        elevator.goToFloor(floorsWaiting.down.shift());
+                        elevator.debug();
+                    } else if (floorsWaiting.up.length > 0) {
                         elevator.goToFloor(floorsWaiting.up.shift());
                         elevator.debug();
-                    } else {
+                    } else{
                         idleElevators.push(elevatorNum);
                     }
                 });
@@ -64,6 +68,9 @@
                     if (floorsWaiting.up.indexOf(floorNum) > -1) {
                         floorsWaiting.up.splice(floorsWaiting.up.indexOf(floorNum), 1);
                     }
+                    if (floorsWaiting.down.indexOf(floorNum) > -1) {
+                        floorsWaiting.down.splice(floorsWaiting.down.indexOf(floorNum), 1);
+                    }
                     elevator.goToClosestPressedFloor();
                     elevator.debug();
                 })
@@ -77,10 +84,11 @@
                 var floorNum = f;
                 var onButtonPressed = function(direction) {
                     return function() {
-                        if (floorsWaiting.up.indexOf(floorNum) === -1) {
-                            floorsWaiting.up.push(floorNum);
+                        if (floorsWaiting[direction].indexOf(floorNum) === -1) {
+                            floorsWaiting[direction].push(floorNum);
                         }
-                        console.log(`${direction} pressed on floor ${floorNum}; floorsWaiting = ${JSON.stringify(floorsWaiting)}`)
+                        console.log(`${direction} pressed on floor ${floorNum}; \
+                            floorsWaiting = ${JSON.stringify(floorsWaiting)}`)
                         if (idleElevators.length > 0) {
                             elevators[idleElevators.shift()].call(floorNum);
                         }
