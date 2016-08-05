@@ -102,6 +102,9 @@
                 // if we're passing a floor, and there are passengers looking to get on in the same direction,
                 // let's stop to pick them up
                 elevator.on("passing_floor", function(floorNum, direction) {
+                    if (elevator.getPressedFloors().indexOf(floorNum) > -1) {
+                        elevator.goToFloor(floorNum, true);
+                    }
                     var direction = elevator.destinationDirection();
                     if ((elevator.loadFactor() < 0.4) && (floorsWaiting[direction].indexOf(floorNum) > -1)) {
                         elevator.goToFloor(floorNum, true);
