@@ -30,7 +30,10 @@
                     }
 
                     // Go to a waiting floor, if one exists
-                    // We choose going down first, so that we don't starve zero
+                    // We first check for floors with passengers going down (e.g. not floor zero)
+                    // If we did the reverse, we'd almost always go to floor zero, and starve the other
+                    // floors.  If we pick from the floors going down, those passengers are almost always
+                    // going to zero, so there is no danger of starving zero. 
                     if (floorsWaiting.down.length > 0) {
                         elevator.goToFloor(floorsWaiting.down.shift());
                         elevator.debug();
@@ -42,6 +45,7 @@
                     }
                 });
 
+                // returns the closest floor to current, regardless of direction
                 elevator.findClosestFloor = function(currentFloor, floors) {
                     if (floors.length > 0) {
                         var closestFloor = floors[0];
@@ -69,18 +73,27 @@
                     }
                 }
 
+                // when a floor button is pressed, go to the *closest* pressed floor
+                // if we were already going to a closer floor, this is effectively a no-op
+                // but if the button was pressed for a closer floor, now we'll go there first
                 elevator.on("floor_button_pressed", function(floorNum) {
                     console.log(`Elevator ${elevatorNum}: floor button pressed for ${floorNum}; `);
                     elevator.goToClosestPressedFloor();
                 });
 
                 elevator.on("stopped_at_floor", function(floorNum) {
+                    // since we always have both indicators on (for now), all passengers will (try to) board
+                    // so we can clear button presses in both directions
                     if (floorsWaiting.up.indexOf(floorNum) > -1) {
                         floorsWaiting.up.splice(floorsWaiting.up.indexOf(floorNum), 1);
                     }
                     if (floorsWaiting.down.indexOf(floorNum) > -1) {
                         floorsWaiting.down.splice(floorsWaiting.down.indexOf(floorNum), 1);
                     }
+
+                    // Always attempt to go to the closest floor requested by a passenger
+                    // If there are none, this will no-op and the elevator will act on its destination queue
+                    // (if any) and then go idle.
                     elevator.goToClosestPressedFloor();
                     elevator.debug();
                 })
