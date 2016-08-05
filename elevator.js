@@ -1,6 +1,9 @@
 {
     init: function(elevators, floors) {
-        var floorsWaiting = {'up' : [], 'down' : []};
+        var floorsWaiting = {
+            'up': [],
+            'down': []
+        };
         var idleElevators = [];
 
         // Elevator event listeners
@@ -21,13 +24,20 @@
                 }
 
                 elevator.on("idle", function() {
+                    // Remove ourselves from the list of idle elvators
+                    if (idleElevators.indexOf(elevatorNum) > -1) {
+                        idleElevators.splice(idleElevators.indexOf(elevatorNum), 1);
+                    }
+
+                    // Go to a waiting floor, if one exists
+                    // We choose going down first, so that we don't starve zero
                     if (floorsWaiting.down.length > 0) {
                         elevator.goToFloor(floorsWaiting.down.shift());
                         elevator.debug();
                     } else if (floorsWaiting.up.length > 0) {
                         elevator.goToFloor(floorsWaiting.up.shift());
                         elevator.debug();
-                    } else{
+                    } else {
                         idleElevators.push(elevatorNum);
                     }
                 });
