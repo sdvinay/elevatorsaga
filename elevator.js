@@ -103,7 +103,7 @@
                 // let's stop to pick them up
                 elevator.on("passing_floor", function(floorNum, direction) {
                     var direction = elevator.destinationDirection();
-                    if (floorsWaiting[direction].indexOf(floorNum) > -1) {
+                    if ((elevator.loadFactor() < 0.4) && (floorsWaiting[direction].indexOf(floorNum) > -1)) {
                         elevator.goToFloor(floorNum, true);
                     }
                 });
