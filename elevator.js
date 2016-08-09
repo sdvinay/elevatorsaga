@@ -47,15 +47,22 @@
                 });
 
                 // returns the closest floor to current, regardless of direction
-                elevator.findClosestFloor = function(currentFloor, floors) {
-                    if (floors.length > 0) {
-                        var closestFloor = floors[0];
-                        var dist = Math.abs(currentFloor - floors[0]);
-                        for (var i = 1; i < floors.length; i++) {
-                            var thisDist = Math.abs(currentFloor - floors[i]);
-                            if (thisDist < dist) {
-                                closestFloor = floors[i];
-                                dist = thisDist;
+                elevator.findClosestFloor = function(currentFloor, destinationFloors) {
+                    if (destinationFloors.length > 0) {
+                        var anyoneGoingUp = destinationFloors.some(f => f > currentFloor);
+                        var closestFloor = destinationFloors[0];
+                        var dist = 1000; // TODO don't hardcode this
+                        for (var i = 1; i < destinationFloors.length; i++) {
+                            var thisDist = (destinationFloors[i] - currentFloor);
+                            if (thisDist < dist && thisDist > 0) {
+                                // If anybody's going up, the elevator goes up.  
+                                // This is to avoid the 0-1-0 bounces we see regularly (and 
+                                // the starvation of going to upper destinationFloors)
+                                if ((anyoneGoingUp === false) || (destinationFloors[i] > currentFloor)) {
+                                    closestFloor = destinationFloors[i];
+                                    dist = thisDist;
+
+                                }
                             }
                         }
                     }
