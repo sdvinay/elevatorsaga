@@ -21,6 +21,8 @@
                 }
 
                 elevator.call = function(floorNum) {
+                    elevator.goingUpIndicator(true);
+                    elevator.goingDownIndicator(true);
                     elevator.goToFloor(floorNum);
                 }
 
@@ -29,6 +31,9 @@
                     if (idleElevators.indexOf(elevatorNum) > -1) {
                         idleElevators.splice(idleElevators.indexOf(elevatorNum), 1);
                     }
+
+                    elevator.goingUpIndicator(true);
+                    elevator.goingDownIndicator(true);
 
                     // Go to a waiting floor, if one exists
                     // We first check for floors with passengers going down (e.g. not floor zero)
@@ -75,6 +80,9 @@
                     var floors = elevator.getPressedFloors();
                     if (floors.length > 0) {
                         var closestFloor = elevator.findClosestFloor(elevator.currentFloor(), floors);
+                        var goingUp = closestFloor > elevator.currentFloor();
+                        elevator.goingUpIndicator(goingUp);
+                        elevator.goingDownIndicator(!goingUp);
                         console.log(`Elevator ${elevatorNum}:  Currently on floor ${elevator.currentFloor()}\
                             pressedFloors = ${floors}. Headed to floor ${closestFloor} `);
                         elevator.goToFloor(closestFloor, true);
@@ -90,6 +98,10 @@
                 });
 
                 elevator.on("stopped_at_floor", function(floorNum) {
+                    if ((elevator.currentFloor() === 0) || elevator.getPressedFloors().length === 0) {
+                        elevator.goingUpIndicator(true);
+                        elevator.goingDownIndicator(true);
+                    }
                     // clear the call press button only for the direction(s) we have indicated
                     // (because only those passengers will get on board)
                     if (elevator.goingUpIndicator() && (floorsWaiting.up.indexOf(floorNum) > -1)) {
@@ -111,6 +123,8 @@
                 elevator.on("passing_floor", function(floorNum, direction) {
                     if (elevator.getPressedFloors().indexOf(floorNum) > -1) {
                         elevator.goToFloor(floorNum, true);
+                        elevator.goingUpIndicator(direction === "up");
+                        elevator.goingUpIndicator(direction === "down");
                     }
                     var direction = elevator.destinationDirection();
                     if ((elevator.loadFactor() < 0.4) && (floorsWaiting[direction].indexOf(floorNum) > -1)) {
