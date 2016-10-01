@@ -3,6 +3,8 @@
 
         // Elevator event listeners and functions
         _.each(elevators, function(elevator, elevatorNum) {
+            elevator.elevatorNum = elevatorNum;
+
             elevator.debug = function() {
                 var debugStr = `Elevator ${elevatorNum} on floor ${elevator.currentFloor()}: \
                         DestQueue = ${elevator.destinationQueue}`;
@@ -44,16 +46,11 @@
                         })) {
                         return;
                     }
-                    var elevatorToCall = 0;
-                    var minQueue = elevators[0].destinationQueue.length;
-                    for (var i = 1; i < elevators.length; i++) {
-                        if (elevators[i].destinationQueue.length < minQueue) {
-                            elevatorToCall = i;
-                            minQueue = elevators[i].destinationQueue.length;
-                        }
-                    }
-                    console.log(`${direction} pressed on floor ${floorNum}; calling elevator ${elevatorToCall}`);
-                    elevators[elevatorToCall].call(floorNum);
+
+                    // Choose the elevator that currently has the shortest destination queue
+                    var e = elevators.reduce((prev, cur) => (cur.destinationQueue.length < prev.destinationQueue.length ? cur : prev), elevators[0]);
+                    console.log(`${direction} pressed on floor ${floorNum}; calling elevator ${e.elevatorNum}`);
+                    e.call(floorNum);
                 }
             };
             floor.on("down_button_pressed", onCallButtonPressed('down'));
