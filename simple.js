@@ -16,6 +16,9 @@
                     elevator.goToFloor(nextDest, true);
                 }
             }
+            elevator.on("stopped_at_floor", function(floorNum) {
+                elevator.dropOffClosestPassenger();
+            });
 
             elevator.stripOutDestinations = function (floorNum) {
                 elevator.destinationQueue = elevator.destinationQueue.filter(f => f != floorNum);
