@@ -9,9 +9,11 @@
                 console.log(debugStr);
             }
 
+            elevator.call = elevator.goToFloor;
+
             elevator.on("floor_button_pressed", function(floorNum) {
                 console.log(`Elevator ${elevatorNum}: floor button pressed for ${floorNum}; `);
-                elevator.goToFloor(floorNum);
+                elevator.call(floorNum);
                 elevator.debug();
             });
         });
@@ -22,7 +24,7 @@
             var onCallButtonPressed = function(direction) {
                 return function() {
                     console.log(`${direction} pressed on floor ${floorNum}; `);
-                    elevators[0].goToFloor(floorNum);
+                    elevators[0].call(floorNum);
                 }
             };
             floor.on("down_button_pressed", onCallButtonPressed('down'));
