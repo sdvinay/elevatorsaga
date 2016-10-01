@@ -26,7 +26,7 @@
             }
 
             elevator.call = function(floorNum) {
-                if (! elevator.hasDestination(floorNum)) {
+                if (!elevator.hasDestination(floorNum)) {
                     elevator.goToFloor(floorNum);
                 }
                 elevator.debug();
@@ -49,7 +49,8 @@
                     }
 
                     // Choose the elevator that currently has the shortest destination queue
-                    var e = elevators.reduce((prev, cur) => (cur.destinationQueue.length < prev.destinationQueue.length ? cur : prev), elevators[0]);
+                    var shorterQueue = (e1, e2) => (e1.destinationQueue.length < e2.destinationQueue.length ? e1 : e2);
+                    var e = elevators.reduce(shorterQueue, elevators[0]);
                     console.log(`${direction} pressed on floor ${floorNum}; calling elevator ${e.elevatorNum}`);
                     e.call(floorNum);
                 }
