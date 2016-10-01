@@ -5,7 +5,7 @@
 	    _.each(elevators, function (elevator, elevatorNum) {
                 elevator.debug = function() {
                     var debugStr = `Elevator ${elevatorNum} on floor ${elevator.currentFloor()}: \
-                        DestQueue = ${elevator.destinationQueue}; ` 
+                        DestQueue = ${elevator.destinationQueue}`; 
                     console.log(debugStr);
                 }
 
@@ -15,8 +15,8 @@
 
                 elevator.on("floor_button_pressed", function(floorNum) {
                     console.log(`Elevator ${elevatorNum}: floor button pressed for ${floorNum}; `);
-					elevator.debug();
 					elevator.goToFloor(floorNum);
+					elevator.debug();
                 });
 
 
