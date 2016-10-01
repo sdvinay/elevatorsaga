@@ -16,8 +16,11 @@
                     elevator.goToFloor(nextDest, true);
                 }
             }
-            elevator.on("stopped_at_floor", function(floorNum) {
-                elevator.dropOffClosestPassenger();
+            elevator.on("passing_floor", function(floorNum, direction) {
+                if (elevator.destinationQueue.indexOf(floorNum) > -1) {
+                    elevator.stripOutDestinations(floorNum);
+                    elevator.goToFloor(floorNum, true);
+                }
             });
 
             elevator.stripOutDestinations = function(floorNum) {
@@ -50,7 +53,6 @@
             elevator.on("floor_button_pressed", function(floorNum) {
                 console.log(`Elevator ${elevatorNum}: floor button pressed for ${floorNum}; `);
                 elevator.call(floorNum);
-                elevator.dropOffClosestPassenger();
                 elevator.debug();
             });
         });
