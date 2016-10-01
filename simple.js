@@ -9,6 +9,38 @@
                 console.log(debugStr);
             }
 
+            elevator.dropOffClosestPassenger = function() {
+                if (elevator.getPressedFloors().length > 0) {
+                    var nextDest = this.findClosestFloor(elevator.currentFloor(), elevator.getPressedFloors());
+                    elevator.stripOutDestinations(nextDest);
+                    elevator.goToFloor(nextDest, true);
+                }
+            }
+
+            elevator.stripOutDestinations = function(floorNum) {
+                var q = elevator.destinationQueue;
+                for (var i = q.length - 1; i >= 0; i--) {
+                    if (q[i] === floorNum) {
+                        q.splice(i, 1);
+                    }
+                }
+            }
+
+            // returns the closest floor to current, regardless of direction
+            elevator.findClosestFloor = function(currentFloor, destinationFloors) {
+                if (destinationFloors.length > 0) {
+                    var closestFloor = destinationFloors[0];
+                    var dist = floors.length + 2;
+                    for (var i = 0; i < destinationFloors.length; i++) {
+                        var thisDist = Math.abs(destinationFloors[i] - currentFloor);
+                        if (thisDist < dist && thisDist > 0) {
+                            closestFloor = destinationFloors[i];
+                            dist = thisDist;
+                        }
+                    }
+                }
+                return closestFloor;
+            }
             elevator.call = function(floorNum) {
                 if (elevator.destinationQueue.indexOf(floorNum) < 0) {
                     elevator.goToFloor(floorNum);
@@ -19,6 +51,7 @@
             elevator.on("floor_button_pressed", function(floorNum) {
                 console.log(`Elevator ${elevatorNum}: floor button pressed for ${floorNum}; `);
                 elevator.call(floorNum);
+                elevator.dropOffClosestPassenger();
                 elevator.debug();
             });
         });
