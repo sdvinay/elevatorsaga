@@ -9,7 +9,11 @@
                 console.log(debugStr);
             }
 
-            elevator.call = elevator.goToFloor;
+            elevator.call = function(floorNum) {
+                if (elevator.destinationQueue.indexOf(floorNum) < 0) {
+                    elevator.goToFloor(floorNum);
+                }
+            }
 
             elevator.on("floor_button_pressed", function(floorNum) {
                 console.log(`Elevator ${elevatorNum}: floor button pressed for ${floorNum}; `);
