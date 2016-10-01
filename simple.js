@@ -20,7 +20,7 @@
                 elevator.dropOffClosestPassenger();
             });
 
-            elevator.stripOutDestinations = function (floorNum) {
+            elevator.stripOutDestinations = function(floorNum) {
                 elevator.destinationQueue = elevator.destinationQueue.filter(f => f != floorNum);
                 elevator.checkDestinationQueue();
             }
@@ -60,10 +60,20 @@
             var floorNum = floor.floorNum();
             var onCallButtonPressed = function(direction) {
                 return function() {
-                    if (elevators.some(function(e) {return (e.destinationQueue.indexOf(floorNum) >= 0)})) {
+                    if (elevators.some(function(e) {
+                            return (e.destinationQueue.indexOf(floorNum) >= 0)
+                        })) {
                         return;
                     }
-                    var elevatorToCall = floorNum % elevators.length;
+                    var elevatorToCall = 0;
+                    var minQueue = elevators[0].destinationQueue.length;
+                    for (var i = 1; i < elevators.length; i++) {
+                        if (elevators[i].destinationQueue.length < minQueue) {
+                            elevatorToCall = i;
+                            minQueue = elevators[i].destinationQueue.length;
+
+                        }
+                    }
                     console.log(`${direction} pressed on floor ${floorNum}; calling elevator ${elevatorToCall}`);
                     elevators[elevatorToCall].call(floorNum);
                     elevators[elevatorToCall].debug();
