@@ -12,11 +12,13 @@
             }
 
             elevator.on("passing_floor", function(floorNum, direction) {
-                if (elevator.destinationQueue.indexOf(floorNum) > -1) {
+                if (elevator.hasDestination(floorNum)) {
                     elevator.stripOutDestinations(floorNum);
                     elevator.goToFloor(floorNum, true);
                 }
             });
+
+            elevator.hasDestination = (floorNum) => (elevator.destinationQueue.indexOf(floorNum) >= 0);
 
             elevator.stripOutDestinations = function(floorNum) {
                 elevator.destinationQueue = elevator.destinationQueue.filter(f => f != floorNum);
@@ -24,7 +26,7 @@
             }
 
             elevator.call = function(floorNum) {
-                if (elevator.destinationQueue.indexOf(floorNum) < 0) {
+                if (! elevator.hasDestination(floorNum)) {
                     elevator.goToFloor(floorNum);
                 }
                 elevator.debug();
@@ -41,9 +43,8 @@
             var floorNum = floor.floorNum();
             var onCallButtonPressed = function(direction) {
                 return function() {
-                    if (elevators.some(function(e) {
-                            return (e.destinationQueue.indexOf(floorNum) >= 0)
-                        })) {
+                    // If any elevator is already going there, do nothing
+                    if (elevators.some((e) => (e.hasDestination(floorNum)))) {
                         return;
                     }
 
