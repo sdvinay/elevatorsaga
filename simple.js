@@ -17,13 +17,9 @@
                 }
             }
 
-            elevator.stripOutDestinations = function(floorNum) {
-                var q = elevator.destinationQueue;
-                for (var i = q.length - 1; i >= 0; i--) {
-                    if (q[i] === floorNum) {
-                        q.splice(i, 1);
-                    }
-                }
+            elevator.stripOutDestinations = function (floorNum) {
+                elevator.destinationQueue = elevator.destinationQueue.filter(f => f != floorNum);
+                elevator.checkDestinationQueue();
             }
 
             // returns the closest floor to current, regardless of direction
@@ -33,7 +29,7 @@
                     var dist = floors.length + 2;
                     for (var i = 0; i < destinationFloors.length; i++) {
                         var thisDist = Math.abs(destinationFloors[i] - currentFloor);
-                        if (thisDist < dist && thisDist > 0) {
+                        if (thisDist < dist && thisDist >= 0) {
                             closestFloor = destinationFloors[i];
                             dist = thisDist;
                         }
@@ -61,6 +57,9 @@
             var floorNum = floor.floorNum();
             var onCallButtonPressed = function(direction) {
                 return function() {
+                    if (elevators.some(function(e) {return (e.destinationQueue.indexOf(floorNum) >= 0)})) {
+                        return;
+                    }
                     var elevatorToCall = floorNum % elevators.length;
                     console.log(`${direction} pressed on floor ${floorNum}; calling elevator ${elevatorToCall}`);
                     elevators[elevatorToCall].call(floorNum);
