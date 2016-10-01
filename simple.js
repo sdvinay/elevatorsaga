@@ -9,13 +9,6 @@
                 console.log(debugStr);
             }
 
-            elevator.dropOffClosestPassenger = function() {
-                if (elevator.getPressedFloors().length > 0) {
-                    var nextDest = this.findClosestFloor(elevator.currentFloor(), elevator.getPressedFloors());
-                    elevator.stripOutDestinations(nextDest);
-                    elevator.goToFloor(nextDest, true);
-                }
-            }
             elevator.on("passing_floor", function(floorNum, direction) {
                 if (elevator.destinationQueue.indexOf(floorNum) > -1) {
                     elevator.stripOutDestinations(floorNum);
@@ -28,32 +21,16 @@
                 elevator.checkDestinationQueue();
             }
 
-            // returns the closest floor to current, regardless of direction
-            elevator.findClosestFloor = function(currentFloor, destinationFloors) {
-                if (destinationFloors.length > 0) {
-                    var closestFloor = destinationFloors[0];
-                    var dist = floors.length + 2;
-                    for (var i = 0; i < destinationFloors.length; i++) {
-                        var thisDist = Math.abs(destinationFloors[i] - currentFloor);
-                        if (thisDist < dist && thisDist >= 0) {
-                            closestFloor = destinationFloors[i];
-                            dist = thisDist;
-                        }
-                    }
-                }
-                return closestFloor;
-            }
             elevator.call = function(floorNum) {
                 if (elevator.destinationQueue.indexOf(floorNum) < 0) {
                     elevator.goToFloor(floorNum);
-
                 }
+                elevator.debug();
             }
 
             elevator.on("floor_button_pressed", function(floorNum) {
                 console.log(`Elevator ${elevatorNum}: floor button pressed for ${floorNum}; `);
                 elevator.call(floorNum);
-                elevator.debug();
             });
         });
 
@@ -73,13 +50,10 @@
                         if (elevators[i].destinationQueue.length < minQueue) {
                             elevatorToCall = i;
                             minQueue = elevators[i].destinationQueue.length;
-
                         }
                     }
                     console.log(`${direction} pressed on floor ${floorNum}; calling elevator ${elevatorToCall}`);
                     elevators[elevatorToCall].call(floorNum);
-                    elevators[elevatorToCall].debug();
-
                 }
             };
             floor.on("down_button_pressed", onCallButtonPressed('down'));
