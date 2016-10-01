@@ -19,6 +19,7 @@
 
                 elevator.on("floor_button_pressed", function(floorNum) {
                     console.log(`Elevator ${elevatorNum}: floor button pressed for ${floorNum}; `);
+					elevator.debug();
 					elevator.goToFloor(floorNum);
                 });
 
