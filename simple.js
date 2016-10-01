@@ -12,6 +12,7 @@
             elevator.call = function(floorNum) {
                 if (elevator.destinationQueue.indexOf(floorNum) < 0) {
                     elevator.goToFloor(floorNum);
+
                 }
             }
 
@@ -27,8 +28,11 @@
             var floorNum = floor.floorNum();
             var onCallButtonPressed = function(direction) {
                 return function() {
-                    console.log(`${direction} pressed on floor ${floorNum}; `);
-                    elevators[0].call(floorNum);
+                    var elevatorToCall = floorNum % elevators.length;
+                    console.log(`${direction} pressed on floor ${floorNum}; calling elevator ${elevatorToCall}`);
+                    elevators[elevatorToCall].call(floorNum);
+                    elevators[elevatorToCall].debug();
+
                 }
             };
             floor.on("down_button_pressed", onCallButtonPressed('down'));
