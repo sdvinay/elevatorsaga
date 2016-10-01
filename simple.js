@@ -2,11 +2,7 @@
     init: function(elevators, floors) {
 
         // Elevator event listeners; attaching the same code/listeners to each elevator here:
-        for (var i = 0; i < elevators.length; i++) {
-            var x = function() { // create a closure for local state per-elevator
-                var elevator = elevators[i];
-                var elevatorNum = i;
-
+	    _.each(elevators, function (elevator, elevatorNum) {
                 elevator.debug = function() {
                     var debugStr = `Elevator ${elevatorNum} on floor ${elevator.currentFloor()}: \
                         DestQueue = ${elevator.destinationQueue}; ` 
@@ -24,14 +20,11 @@
                 });
 
 
-            }();
-        }
+            });
 
         // Floor event listeners
-        for (var f = 0; f < floors.length; f++) {
-            var y = function() {
-                var floor = floors[f];
-                var floorNum = f;
+		_.each(floors, function(floor) {
+                var floorNum = floor.floorNum();
                 var onCallButtonPressed = function(direction) {
                     return function() {
                         console.log(`${direction} pressed on floor ${floorNum}; `);
@@ -40,8 +33,7 @@
                 };
                 floor.on("down_button_pressed", onCallButtonPressed('down'));
                 floor.on("up_button_pressed", onCallButtonPressed('up'));
-            }();
-        }
+            });
     },
     update: function(dt, elevators, floors) {
         // We normally don't need to do anything here
